@@ -72,15 +72,15 @@ Comparison accounts for:
 ## Project Structure
 
 ### Classes
-This contains all objects used in this program, organized by category.
+- This contains all objects used in this program, organized by category.
 ---
 
 ### Extraction
-This contains functions that perform the model extraction on the target codebase.
+- This contains functions that perform the model extraction on the target codebase.
 ---
 
 ### Analysis
-This contains functions that will build the model forest, consolidate the observed forest into a tag forest, and compare the two.
+- This contains functions that will build the model forest, consolidate the observed forest into a tag forest, and compare the two.
 --
 
 ## Instructions to Run

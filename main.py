@@ -1,3 +1,9 @@
+"""Command-line entry used to analyze tag coverage across a codebase.
+
+This script wires together the extraction, propagation and analysis
+components to compute coverage statistics for a target directory.
+"""
+
 import sys
 import os
 
@@ -9,11 +15,17 @@ from extraction.build_function_forest import build_function_forest
 from analysis.build_tag_forest import build_tag_forest
 from analysis.build_model_forest import build_model_forest
 from analysis.compare_forests import compare_forests
+from extraction.tag_propagation import propagate_tags
 from classes.analysis.coverage_result import CoverageResult
 from classes.analysis.coverage_stats import CoverageStats
 from tabulate import tabulate
 
+
 def print_summary_table(result: CoverageResult):
+    """Print human readable summary tables for `result`.
+
+    The function prints breakdowns by action, category and subcategory.
+    """
     action_table: list[list[str | int | float]] = [
         [action, stats.total, stats.covered, round(stats.weighted_coverage, 2)]
         for action, stats in result.action_stats.items()
@@ -35,11 +47,19 @@ def print_summary_table(result: CoverageResult):
     print("\n=== Coverage by Subcategory ===")
     print(tabulate(subcat_table, headers=["Category/Subcategory", "Total", "Covered", "Weighted Coverage"]))
 
+
 def run_analysis(path: str):
+    """Run the full extraction -> propagation -> comparison analysis.
+
+    `path` should be the root of the codebase to scan.
+    """
     print(f"Scanning codebase at: {path}\n")
 
     observed = build_function_forest(path)
     print(f"Discovered {len(observed.functions)} functions.\n")
+
+    propagate_tags(observed)
+    print(f"Propagated tags from caller to callee.")
 
     observed_tags = build_tag_forest(observed)
     print(f"Consolidated {len(observed_tags.nodes)} unique tags.\n")

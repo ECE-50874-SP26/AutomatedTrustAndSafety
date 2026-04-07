@@ -1,3 +1,9 @@
+"""Walk a directory tree and parse supported files into an ExtractionState.
+
+This function traverses `root_path`, finds files with supported
+extensions and feeds them to `parse_file` for extraction.
+"""
+
 import os
 from classes.extraction.extraction_state import ExtractionState
 from .code_parser import parse_file
@@ -6,7 +12,9 @@ SUPPORTED_EXTENSIONS = (
     ".c", ".cpp", ".h", ".java", ".js", ".ts", ".go", ".rs", ".py", ".txt", ".bas", ".rb"
 )
 
+
 def build_function_forest(root_path: str) -> ExtractionState:
+    """Return an `ExtractionState` populated by parsing files under `root_path`."""
     state = ExtractionState()
     print("Scanning:", root_path)
     print("Exists?", os.path.exists(root_path))

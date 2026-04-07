@@ -1,8 +1,14 @@
-# TODO: Turn into actual model
+"""Create a small in-memory model `TagForest` used for comparisons.
+
+This is the canonical static model based on our data.
+"""
+
 from classes.forests.tag_forest import TagForest
 from classes.ts_tag.tag import Tag
 
+
 def build_model_forest() -> TagForest:
+    """Build and return a sample `TagForest` representing the model tags."""
     forest = TagForest()
     forest.add_tag(Tag("hate_speech", "moderation", "harassment"))
     forest.add_tag(Tag("fake_account", "moderation", "misinformation"))

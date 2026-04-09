@@ -27,25 +27,25 @@ def print_summary_table(result: CoverageResult):
     The function prints breakdowns by action, category and subcategory.
     """
     action_table: list[list[str | int | float]] = [
-        [action, stats.total, stats.covered, round(stats.weighted_coverage, 2)]
+        [action, stats.total, stats.covered, round(stats.weighted_coverage, 2), round(stats.precision, 2), round(stats.recall, 2), round(stats.f1_score, 2)]
         for action, stats in result.action_stats.items()
     ]
     print("\n=== Coverage by Action ===")
-    print(tabulate(action_table, headers=["Action", "Total", "Covered", "Weighted Coverage"]))
+    print(tabulate(action_table, headers=["Action", "Total", "Covered", "Weighted Coverage", "Precision", "Recall", "F1-Score"]))
 
     category_table: list[list[str | int | float]] = [
-        [category, stats.total, stats.covered, round(stats.weighted_coverage, 2)]
+        [category, stats.total, stats.covered, round(stats.weighted_coverage, 2), round(stats.precision, 2), round(stats.recall, 2), round(stats.f1_score, 2)]
         for category, stats in result.category_stats.items()
     ]
     print("\n=== Coverage by Category ===")
-    print(tabulate(category_table, headers=["Category", "Total", "Covered", "Weighted Coverage"]))
+    print(tabulate(category_table, headers=["Category", "Total", "Covered", "Weighted Coverage", "Precision", "Recall", "F1-Score"]))
 
     subcat_table: list[list[str | int | float]] = [
-        [f"{cat}/{sub if sub else '-'}", stats.total, stats.covered, round(stats.weighted_coverage, 2)]
+        [f"{cat}/{sub if sub else '-'}", stats.total, stats.covered, round(stats.weighted_coverage, 2), round(stats.precision, 2), round(stats.recall, 2), round(stats.f1_score, 2)]
         for (cat, sub), stats in result.subcategory_stats.items()
     ]
     print("\n=== Coverage by Subcategory ===")
-    print(tabulate(subcat_table, headers=["Category/Subcategory", "Total", "Covered", "Weighted Coverage"]))
+    print(tabulate(subcat_table, headers=["Category/Subcategory", "Total", "Covered", "Weighted Coverage", "Precision", "Recall", "F1-Score"]))
 
 
 def run_analysis(path: str):

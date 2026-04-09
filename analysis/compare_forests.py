@@ -9,6 +9,13 @@ from classes.forests.tag_forest import TagForest
 from classes.analysis.coverage_result import CoverageResult
 from classes.analysis.coverage_stats import CoverageStats
 
+DEPTH_WEIGHTS = {"action": 1.0, "category": 2.0, "subcategory": 3.0}
+
+def compute_precision_recall_f1(stats: CoverageStats, observed_total: int) -> None:
+    stats.precision = stats.covered / observed_total if observed_total > 0 else 0.0
+    stats.recall = stats.covered / stats.total if stats.total > 0 else 0.0
+    stats.f1_score = 2 * (stats.precision * stats.recall) / (stats.precision + stats.recall) if (stats.precision + stats.recall) > 0 else 0.0
+
 
 def compare_forests(model: TagForest, observed: TagForest) -> CoverageResult:
     """Return a `CoverageResult` comparing `model` against `observed`.
@@ -54,21 +61,21 @@ def compare_forests(model: TagForest, observed: TagForest) -> CoverageResult:
     # Normalize weighted coverage values by their totals
     if result.total_stats.total > 0:
         result.total_stats.weighted_coverage /= result.total_stats.total
+        compute_precision_recall_f1(result.total_stats, result.total_stats.covered)
 
-    for stats in result.action_stats.values():
+    for action, stats in result.action_stats.items():
         if stats.total > 0:
-            stats.weighted_coverage /= stats.total
+            stats.weighted_coverage = (stats.weighted_coverage / stats.total) * DEPTH_WEIGHTS["action"]
+        compute_precision_recall_f1(stats, result.action_stats[action].covered)
 
-    for stats in result.category_stats.values():
+    for category, stats in result.category_stats.items():
         if stats.total > 0:
-            stats.weighted_coverage /= stats.total
+            stats.weighted_coverage = (stats.weighted_coverage / stats.total) * DEPTH_WEIGHTS["category"]
+        compute_precision_recall_f1(stats, result.category_stats[category].covered)
 
-    for stats in result.subcategory_stats.values():
+    for subkey, stats in result.subcategory_stats.items():
         if stats.total > 0:
-            stats.weighted_coverage /= stats.total
+            stats.weighted_coverage = (stats.weighted_coverage / stats.total) * DEPTH_WEIGHTS["subcategory"]
+        compute_precision_recall_f1(stats, result.subcategory_stats[subkey].covered)
 
     return result
-
-
-
-        

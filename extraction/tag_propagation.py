@@ -52,6 +52,5 @@ def propagate_tags(state: ExtractionState) -> None:
     This initializes a traversal from each function; internal `visited`
     tracking prevents redundant work.
     """
-    visited: Set[str] = set()
     for func in state.functions.values():
-        search_function_calls(state, func, visited)
+        search_function_calls(state, func, set())

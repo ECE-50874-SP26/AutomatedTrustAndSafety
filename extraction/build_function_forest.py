@@ -23,6 +23,8 @@ def build_function_forest(root_path: str) -> ExtractionState:
     for dirpath, _, filenames in os.walk(root_path):
         for filename in filenames:
             if filename.endswith(SUPPORTED_EXTENSIONS):
+                print(f"Parsing file: {os.path.join(dirpath, filename)}")
                 file_path = os.path.join(dirpath, filename)
                 parse_file(file_path, state)
+                print(f"Finished parsing {filename}. Current function count: {len(state.functions)}")
     return state

@@ -110,6 +110,8 @@ def parse_file(path: str, state: ExtractionState) -> None:
         func_match = FUNC_DEF_REGEX.search(joined_line)
         if func_match:
             func_name = func_match.group(1)
+            # Added this line so that tags from different functions with the same name aren't conflated with each other and wrongfully skipped.
+            func_name += f" ({path})"  # Append file path for disambiguation
             state.current_function = func_name
             state.call_stack.append(func_name)
 

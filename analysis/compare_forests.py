@@ -34,48 +34,58 @@ def compare_forests(model: TagForest, observed: TagForest) -> CoverageResult:
 
         if action not in result.action_stats:
             result.action_stats[action] = CoverageStats(total=0, covered=0, weighted_coverage=0.0)
-        result.action_stats[action].total += 1
+        #result.action_stats[action].total += 1
 
         if category not in result.category_stats:
             result.category_stats[category] = CoverageStats()
-        result.category_stats[category].total += 1
+        #result.category_stats[category].total += 1
 
         subkey = (category, subcategory)
         if subkey not in result.subcategory_stats:
             result.subcategory_stats[subkey] = CoverageStats()
-        result.subcategory_stats[subkey].total += 1
+        #result.subcategory_stats[subkey].total += 1
 
         if observed_node:
             result.total_stats.covered += 1
+            #observed_node.count = int(observed_node.count / 2) # To account for double counting 
             result.total_stats.weighted_coverage += observed_node.count
-
+            
             result.action_stats[action].covered += 1
             result.action_stats[action].weighted_coverage += observed_node.count
+            result.action_stats[action].total += observed_node.count
 
             result.category_stats[category].covered += 1
             result.category_stats[category].weighted_coverage += observed_node.count
+            result.category_stats[category].total += observed_node.count
 
             result.subcategory_stats[subkey].covered += 1
             result.subcategory_stats[subkey].weighted_coverage += observed_node.count
+            result.subcategory_stats[subkey].total += observed_node.count
 
     # Normalize weighted coverage values by their totals
+    total_tags = 0
+    total_covered = 0
+    for action, stats in result.action_stats.items():
+        total_tags += int(stats.total)
+        total_covered += stats.covered
+
     if result.total_stats.total > 0:
-        result.total_stats.weighted_coverage /= result.total_stats.total
+        result.total_stats.weighted_coverage = total_covered / result.total_stats.total
         compute_precision_recall_f1(result.total_stats, result.total_stats.covered)
 
     for action, stats in result.action_stats.items():
         if stats.total > 0:
-            stats.weighted_coverage = (stats.weighted_coverage / stats.total) * DEPTH_WEIGHTS["action"]
+            stats.weighted_coverage = stats.weighted_coverage / total_tags * result.total_stats.weighted_coverage
         compute_precision_recall_f1(stats, result.action_stats[action].covered)
 
     for category, stats in result.category_stats.items():
         if stats.total > 0:
-            stats.weighted_coverage = (stats.weighted_coverage / stats.total) * DEPTH_WEIGHTS["category"]
+            stats.weighted_coverage = stats.weighted_coverage / total_tags * result.total_stats.weighted_coverage
         compute_precision_recall_f1(stats, result.category_stats[category].covered)
 
     for subkey, stats in result.subcategory_stats.items():
         if stats.total > 0:
-            stats.weighted_coverage = (stats.weighted_coverage / stats.total) * DEPTH_WEIGHTS["subcategory"]
+            stats.weighted_coverage = stats.weighted_coverage / total_tags * result.total_stats.weighted_coverage
         compute_precision_recall_f1(stats, result.subcategory_stats[subkey].covered)
 
     return result

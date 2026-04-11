@@ -52,5 +52,9 @@ def propagate_tags(state: ExtractionState) -> None:
     This initializes a traversal from each function; internal `visited`
     tracking prevents redundant work.
     """
+    count = 0
     for func in state.functions.values():
+        count += 1
+        if count % 100 == 0:
+            print(f"Functions complete: {count}/{len(state.functions)}")
         search_function_calls(state, func, set())
